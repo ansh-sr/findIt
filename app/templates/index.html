@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>findIt — Campus Lost &amp; Found</title>
+    <style>
+        :root {
+            --bg-cream: #f6f5f0;
+            --bg-hero: #f1f0ea;
+            --card-bg: #ffffff;
+            --lime: #b5f500;
+            --lime-hover: #a3de00;
+            --ink: #141414;
+            --muted: #6b6b66;
+            --border: #e2e0d8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-cream);
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Top Navigation */
+        nav {
+            background-color: var(--bg-cream);
+            border-bottom: 1px solid var(--border);
+            padding: 1.1rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 800;
+            font-size: 1.35rem;
+            letter-spacing: -0.04em;
+        }
+
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--lime);
+            border-radius: 5px;
+            display: grid;
+            place-items: center;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 0.65rem;
+        }
+
+        .btn-nav {
+            background-color: var(--ink);
+            color: #ffffff;
+            text-decoration: none;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.65rem 1.05rem;
+            border-radius: 3px;
+            transition: transform 0.12s ease, background-color 0.15s ease;
+        }
+
+        .btn-nav:hover {
+            background-color: #2b2b2b;
+            transform: translateY(-1px);
+        }
+
+        .btn-nav.outline {
+            background-color: transparent;
+            color: var(--ink);
+            border: 1.5px solid var(--ink);
+        }
+
+        .btn-nav.outline:hover {
+            background-color: var(--ink);
+            color: #ffffff;
+        }
+
+        /* Hero Search Section */
+        .hero {
+            background-color: var(--bg-hero);
+            border-bottom: 1px solid var(--border);
+            padding: 4.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-dot {
+            position: absolute;
+            left: 8%;
+            bottom: 22%;
+            width: 11px;
+            height: 11px;
+            background-color: var(--lime);
+            border-radius: 50%;
+        }
+
+        .hero-shape {
+            position: absolute;
+            right: -25px;
+            top: -15px;
+            width: 190px;
+            height: 230px;
+            background-color: var(--lime);
+            transform: rotate(11deg);
+            pointer-events: none;
+        }
+
+        .search-pill {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 680px;
+            background-color: #ffffff;
+            border: 1.5px solid var(--border);
+            border-radius: 999px;
+            padding: 0.45rem 0.45rem 0.45rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.04);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .search-pill:focus-within {
+            border-color: var(--ink);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-pill input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            color: var(--ink);
+            background: transparent;
+            font-family: inherit;
+        }
+
+        .search-pill input::placeholder {
+            color: #7e7e78;
+        }
+
+        .search-submit {
+            width: 48px;
+            height: 44px;
+            border-radius: 999px;
+            background-color: var(--lime);
+            border: none;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: background-color 0.15s ease, transform 0.12s ease;
+        }
+
+        .search-submit:hover {
+            background-color: var(--lime-hover);
+            transform: scale(1.03);
+        }
+
+        /* Main Feed */
+        main {
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 3.5rem 2rem 5rem;
+        }
+
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1.75rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .feed-header h1 {
+            font-size: 2.15rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .feed-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .clear-filter {
+            font-size: 0.82rem;
+            color: var(--muted);
+            text-decoration: underline;
+        }
+
+        .latest-counter {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.35rem;
+        }
+
+        @media (max-width: 1024px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+            nav { padding: 1rem 1.5rem; }
+        }
+
+        @media (max-width: 580px) {
+            .grid { grid-template-columns: 1fr; }
+            .hero-shape { width: 110px; }
+        }
+
+        /* Item Card */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-media {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background-color: #ebe9e1;
+            overflow: hidden;
+        }
+
+        .card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .no-photo {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            color: #8a8880;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            background: repeating-linear-gradient(
+                -45deg,
+                #efede6,
+                #efede6 10px,
+                #e8e6de 10px,
+                #e8e6de 20px
+            );
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 0.28rem 0.65rem;
+            border-radius: 3px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .badge-found {
+            background-color: var(--lime);
+            color: var(--ink);
+        }
+
+        .badge-lost {
+            background-color: var(--ink);
+            color: #ffffff;
+        }
+
+        .corner-chip {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 30px;
+            height: 30px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            color: var(--ink);
+        }
+
+        .card-body {
+            padding: 1.05rem 1.15rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: -0.01em;
+        }
+
+        .card-detail {
+            font-size: 0.84rem;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .card-detail strong {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            padding-top: 0.65rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.7rem;
+            color: #8c8a82;
+        }
+
+        .empty-box {
+            grid-column: 1 / -1;
+            background-color: #ffffff;
+            border: 1.5px dashed var(--border);
+            border-radius: 10px;
+            padding: 3.5rem 1.5rem;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-box a {
+            display: inline-block;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="brand">
+            <span class="brand-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="20" y1="20" x2="16.2" y2="16.2"></line>
+                </svg>
+            </span>
+            findIt
+        </a>
+        <div class="nav-actions">
+            <a href="/post" class="btn-nav">+ POST ITEM</a>
+            <a href="/?q=Found" class="btn-nav outline">FOUND ONLY</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <span class="hero-dot"></span>
+        <div class="hero-shape"></div>
+        <form class="search-pill" method="GET" action="/">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#555550" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="20" y1="20" x2="16.2" y2="16.2"></line>
+            </svg>
+            <input type="text" name="q" value="{{ query }}" placeholder="Keys, black wallet, blue bag...">
+            <button type="submit" class="search-submit" aria-label="Search">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="13 6 19 12 13 18"></polyline>
+                </svg>
+            </button>
+        </form>
+    </section>
+
+    <main>
+        <div class="feed-header">
+            <h1>{% if query %}Results for "{{ query }}"{% else %}Recently posted{% endif %}</h1>
+            <div class="feed-meta">
+                {% if query %}
+                <a href="/" class="clear-filter">Reset filter</a>
+                {% endif %}
+                <span class="latest-counter">LATEST / {{ "%02d"|format(items|length) }}</span>
+            </div>
+        </div>
+
+        <div class="grid">
+            {% for item in items %}
+            <article class="card">
+                <div class="card-media">
+                    {% if item[4] %}
+                    <img src="/uploads/{{ item[4] }}" alt="{{ item[0] }}">
+                    {% else %}
+                    <div class="no-photo">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <span>No image attached</span>
+                    </div>
+                    {% endif %}
+
+                    <span class="status-badge {% if item[1] == 'Found' %}badge-found{% else %}badge-lost{% endif %}">
+                        {{ item[1] }}
+                    </span>
+
+                    <span class="corner-chip" title="{{ item[2] }}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <h2 class="card-title">{{ item[0] }}</h2>
+                    <p class="card-detail"><strong>Spot:</strong> {{ item[2] }}</p>
+                    <p class="card-detail"><strong>Contact:</strong> {{ item[3] }}</p>
+                    <div class="card-footer">{{ item[5].strftime('%d %b %Y · %H:%M') }}</div>
+                </div>
+            </article>
+            {% else %}
+            <div class="empty-box">
+                <p>No matching notices found on the board right now.</p>
+                <a href="/post" class="btn-nav">+ POST FIRST ITEM</a>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>
